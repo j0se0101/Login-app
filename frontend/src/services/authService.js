@@ -1,5 +1,7 @@
-// Usar base relativa para que el proxy de Vite maneje las solicitudes en desarrollo
-const API_URL = '/api/auth';
+// En desarrollo usa proxy de Vite, en producción usa la URL de Render
+const API_URL = import.meta.env.PROD 
+  ? 'https://login-app-u8gf.onrender.com/api/auth'
+  : '/api/auth';
 
 export const authService = {
   async login(credentials) {
