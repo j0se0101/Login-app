@@ -1,6 +1,6 @@
-// En desarrollo usa proxy de Vite, en producción usa la URL de Render
+// En desarrollo usa proxy de Vite, en producción usa variable de entorno
 const API_URL = import.meta.env.PROD 
-  ? 'https://login-app-u8gf.onrender.com/api/auth'
+  ? `${import.meta.env.VITE_API_URL}/api/auth`
   : '/api/auth';
 
 export const authService = {

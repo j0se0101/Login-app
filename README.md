@@ -102,12 +102,57 @@ Sugerencias pendientes:
    - Espera 3-5 minutos
    - Tu URL será: `https://tu-app.onrender.com`
 
+### Frontend (Vercel)
+
+1. **Preparar el proyecto:**
+   ```bash
+   cd frontend
+   npm run build  # Verificar que el build funciona
+   ```
+
+2. **Subir frontend a GitHub:**
+   
+   Si el frontend está en la misma carpeta que el backend:
+   ```bash
+   # Desde la raíz del proyecto
+   git add .
+   git commit -m "feat: Preparar frontend para deployment en Vercel"
+   git push origin main
+   ```
+
+3. **Crear proyecto en Vercel:**
+   - Ve a [vercel.com](https://vercel.com)
+   - Click en "Add New..." → "Project"
+   - Importa tu repositorio de GitHub
+   - Configuración:
+     - **Framework Preset:** `Vite`
+     - **Root Directory:** `frontend`
+     - **Build Command:** `npm run build`
+     - **Output Directory:** `dist`
+     - **Install Command:** `npm install`
+
+4. **Variables de entorno en Vercel:**
+   - En "Environment Variables" agrega:
+     - `VITE_API_URL` = `https://login-app-u8gf.onrender.com`
+
+5. **Deploy:**
+   - Click "Deploy"
+   - Espera 2-3 minutos
+   - Tu URL será: `https://tu-proyecto.vercel.app`
+
+6. **Actualizar CLIENT_ORIGIN en Render:**
+   - Ve a Render → tu servicio backend → Environment
+   - Edita `CLIENT_ORIGIN`:
+     ```
+     https://tu-proyecto.vercel.app
+     ```
+   - Guarda (se redesplegará automáticamente)
+
 ### Notas importantes:
 
 - **Plan Free de Render:** El servicio "duerme" después de 15 minutos de inactividad. Primera petición puede tardar 30-50 segundos.
 - **Health Check:** Render hace ping a `/` cada cierto tiempo.
 - **Logs:** Accede desde el dashboard de Render para debug.
-
-### Frontend (Vercel/Netlify)
-
-Actualiza `CLIENT_ORIGIN` en Render con la URL del frontend desplegado.
+- **Auto-deploy:** Vercel redespliega automáticamente cada push a `main`
+- **Preview deploys:** Cada PR genera un preview único
+- **Custom domain:** Puedes agregar tu dominio en Settings
