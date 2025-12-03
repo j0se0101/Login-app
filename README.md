@@ -55,3 +55,59 @@ Sugerencias pendientes:
 ## Notas
 - No subas `.env` al repositorio. Usa `.env.example`.
 - Si expusiste credenciales anteriormente, rota la contraseña del usuario de MongoDB Atlas.
+
+## Deployment en Render
+
+### Backend (API)
+
+1. **Preparar MongoDB Atlas:**
+   - Accede a MongoDB Atlas → Network Access
+   - Agregar IP: `0.0.0.0/0` (permitir todas las IPs)
+   - Copia tu `MONGODB_URI`
+
+2. **Subir a GitHub:**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin <tu-repo-url>
+   git push -u origin main
+   ```
+
+3. **Crear servicio en Render:**
+   - Ve a [dashboard.render.com](https://dashboard.render.com)
+   - Click "New +" → "Web Service"
+   - Conecta tu repositorio GitHub
+   - Configuración:
+     - **Name:** `login-backend` (o el que prefieras)
+     - **Region:** Oregon (Free)
+     - **Branch:** `main`
+     - **Root Directory:** (dejar vacío)
+     - **Environment:** `Node`
+     - **Build Command:** `npm install`
+     - **Start Command:** `npm start`
+     - **Plan:** Free
+
+4. **Variables de entorno en Render:**
+   - NODE_ENV = `production`
+   - MONGODB_URI = `tu_cadena_de_mongodb_atlas`
+   - JWT_SECRET = `genera_un_secreto_seguro_aleatorio`
+   - JWT_EXPIRE = `24h`
+   - COOKIE_EXPIRE = `24`
+   - CLIENT_ORIGIN = `https://tu-frontend-url.vercel.app` (actualizar después)
+
+5. **Desplegar:**
+   - Click "Create Web Service"
+   - Espera 3-5 minutos
+   - Tu URL será: `https://tu-app.onrender.com`
+
+### Notas importantes:
+
+- **Plan Free de Render:** El servicio "duerme" después de 15 minutos de inactividad. Primera petición puede tardar 30-50 segundos.
+- **Health Check:** Render hace ping a `/` cada cierto tiempo.
+- **Logs:** Accede desde el dashboard de Render para debug.
+
+### Frontend (Vercel/Netlify)
+
+Actualiza `CLIENT_ORIGIN` en Render con la URL del frontend desplegado.

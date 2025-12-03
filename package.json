@@ -2,6 +2,9 @@
   "name": "login-backend",
   "version": "1.0.0",
   "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node src/index.js",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",

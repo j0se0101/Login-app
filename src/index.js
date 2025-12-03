@@ -20,11 +20,16 @@ app.use(helmet());
 // CORS con múltiples orígenes permitidos
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173';
 const allowedOrigins = CLIENT_ORIGIN.split(',').map(o => o.trim());
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir requests sin origen (ej. curl, Postman) o si coincide con lista
+    // En producción, permitir requests sin origen (mobile apps, Postman) o si coincide
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
+    }
+    // Loggear intentos rechazados en producción
+    if (process.env.NODE_ENV === 'production') {
+      console.warn(`CORS bloqueó origen: ${origin}`);
     }
     return callback(new Error('Not allowed by CORS'));
   },
@@ -77,11 +82,23 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('✅ Conexión exitosa a MongoDB Atlas');
-    app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en: http://localhost:${PORT}`);
-      console.log('📝 Prueba las rutas:');
-      console.log('- POST: http://localhost:3000/api/auth/register');
-      console.log('- POST: http://localhost:3000/api/auth/login');
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Servidor corriendo en puerto: ${PORT}`);
+      console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+      if (process.env.NODE_ENV === 'production') {
+        console.log(`🔒 Orígenes permitidos: ${allowedOrigins.join(', ')}`);
+      }
+    });
+    
+    // Manejo graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('👋 SIGTERM recibido, cerrando servidor...');
+      server.close(() => {
+        mongoose.connection.close(false, () => {
+          console.log('✅ Servidor cerrado correctamente');
+          process.exit(0);
+        });
+      });
     });
   })
   .catch((error) => {
